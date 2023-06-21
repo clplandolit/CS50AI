@@ -1,3 +1,5 @@
+# v2106
+
 import csv
 import sys
 
@@ -26,11 +28,12 @@ def load_data(directory):
                 "birth": row["birth"],
                 "movies": set()
             }
+            
             if row["name"].lower() not in names:
                 names[row["name"].lower()] = {row["id"]}
             else:
                 names[row["name"].lower()].add(row["id"])
-
+        
     # Load movies
     with open(f"{directory}/movies.csv", encoding="utf-8") as f:
         reader = csv.DictReader(f)
@@ -55,7 +58,7 @@ def load_data(directory):
 def main():
     if len(sys.argv) > 2:
         sys.exit("Usage: python degrees.py [directory]")
-    directory = sys.argv[1] if len(sys.argv) == 2 else "large"
+    directory = sys.argv[1] if len(sys.argv) == 2 else "small"
 
     # Load data from files into memory
     print("Loading data...")
@@ -91,9 +94,38 @@ def shortest_path(source, target):
 
     If no possible path, returns None.
     """
+    explored = set()
+    num_explored = 0
 
-    # TODO
-    raise NotImplementedError
+    # Initialize frontier to just the starting position
+    start = Node(state=source, parent=None, action=None)
+    frontier = StackFrontier()
+    frontier.add(start)
+
+    while True:
+
+        # If nothing left in frontier, then no path
+        if frontier.empty():
+            raise Exception("no solution")
+
+        # Choose a node from the frontier
+        node = frontier.remove()
+        num_explored += 1
+
+        if node.state == target:
+            print("We've found a solution")
+
+        # Mark node as explored
+        explored.add(node.state)
+
+        # print(node.state[1])
+
+    
+
+        for action, state in neighbors_for_person(node.state):
+            if not frontier.contains_state(state) and state not in explored:
+                child = Node(state=state, parent=node, action=action)
+                frontier.add(child)
 
 
 def person_id_for_name(name):
@@ -110,7 +142,6 @@ def person_id_for_name(name):
             person = people[person_id]
             name = person["name"]
             birth = person["birth"]
-            print(f"ID: {person_id}, Name: {name}, Birth: {birth}")
         try:
             person_id = input("Intended Person ID: ")
             if person_id in person_ids:
