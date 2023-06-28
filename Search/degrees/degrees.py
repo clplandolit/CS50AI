@@ -1,4 +1,4 @@
-# v2106
+# v2806
 
 import csv
 import sys
@@ -58,7 +58,7 @@ def load_data(directory):
 def main():
     if len(sys.argv) > 2:
         sys.exit("Usage: python degrees.py [directory]")
-    directory = sys.argv[1] if len(sys.argv) == 2 else "small"
+    directory = sys.argv[1] if len(sys.argv) == 2 else "large"
 
     # Load data from files into memory
     print("Loading data...")
@@ -114,6 +114,12 @@ def shortest_path(source, target):
 
         if node.state == target:
             print("We've found a solution")
+            solution = []
+            while node.parent is not None:
+                solution.append((node.action, node.state))
+                node = node.parent
+            solution.reverse()
+            return solution
 
         # Mark node as explored
         explored.add(node.state)
