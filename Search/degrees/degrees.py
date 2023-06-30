@@ -1,4 +1,4 @@
-# v2806
+# v3006
 
 import csv
 import sys
@@ -96,10 +96,11 @@ def shortest_path(source, target):
     """
     explored = set()
     num_explored = 0
+    found_early = False
 
     # Initialize frontier to just the starting position
     start = Node(state=source, parent=None, action=None)
-    frontier = StackFrontier()
+    frontier = QueueFrontier()
     frontier.add(start)
 
     while True:
@@ -109,7 +110,8 @@ def shortest_path(source, target):
             raise Exception("no solution")
 
         # Choose a node from the frontier
-        node = frontier.remove()
+        if not found_early:
+            node = frontier.remove()
         num_explored += 1
 
         if node.state == target:
@@ -124,14 +126,19 @@ def shortest_path(source, target):
         # Mark node as explored
         explored.add(node.state)
 
-        # print(node.state[1])
-
-    
 
         for action, state in neighbors_for_person(node.state):
             if not frontier.contains_state(state) and state not in explored:
                 child = Node(state=state, parent=node, action=action)
                 frontier.add(child)
+                print(f"state= {state}")
+                if frontier.contains_state(target):
+                    print("Target found")
+                    found_early = True
+                    node = child
+                    break
+                    
+                
 
 
 def person_id_for_name(name):
